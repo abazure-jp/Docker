@@ -13,41 +13,46 @@ define('PMA_CHARSET_NONE', 0);
 define('PMA_CHARSET_ICONV', 1);
 define('PMA_CHARSET_RECODE', 2);
 define('PMA_CHARSET_ICONV_AIX', 3);
+define('PMA_CHARSET_MB', 4);
 
+if (! isset($GLOBALS['cfg']['RecodingEngine'])) {
+    $GLOBALS['cfg']['RecodingEngine'] = '';
+}
 // Finally detect which function we will use:
-if ($cfg['RecodingEngine'] == 'iconv') {
+if ($GLOBALS['cfg']['RecodingEngine'] == 'iconv') {
     if (@function_exists('iconv')) {
-        if ((@stristr(PHP_OS, 'AIX'))
-            && (@strcasecmp(ICONV_IMPL, 'unknown') == 0)
-            && (@strcasecmp(ICONV_VERSION, 'unknown') == 0)
-        ) {
-            $PMA_recoding_engine = PMA_CHARSET_ICONV_AIX;
-        } else {
-            $PMA_recoding_engine = PMA_CHARSET_ICONV;
-        }
+        $PMA_recoding_engine = PMA_getIconvRecodingEngine();
     } else {
         $PMA_recoding_engine = PMA_CHARSET_NONE;
         PMA_warnMissingExtension('iconv');
     }
-} elseif ($cfg['RecodingEngine'] == 'recode') {
+} elseif ($GLOBALS['cfg']['RecodingEngine'] == 'recode') {
     if (@function_exists('recode_string')) {
         $PMA_recoding_engine = PMA_CHARSET_RECODE;
     } else {
         $PMA_recoding_engine = PMA_CHARSET_NONE;
         PMA_warnMissingExtension('recode');
     }
-} elseif ($cfg['RecodingEngine'] == 'auto') {
-    if (@function_exists('iconv')) {
-        if ((@stristr(PHP_OS, 'AIX'))
-            && (@strcasecmp(ICONV_IMPL, 'unknown') == 0)
-            && (@strcasecmp(ICONV_VERSION, 'unknown') == 0)
-        ) {
-            $PMA_recoding_engine = PMA_CHARSET_ICONV_AIX;
-        } else {
-            $PMA_recoding_engine = PMA_CHARSET_ICONV;
-        }
+} elseif ($GLOBALS['cfg']['RecodingEngine'] == 'mb') {
+    if (@function_exists('mb_convert_encoding')) {
+        $PMA_recoding_engine = PMA_CHARSET_MB;
+    } else {
+        $PMA_recoding_engine = PMA_CHARSET_NONE;
+        PMA_warnMissingExtension('mbstring');
+    }
+} elseif ($GLOBALS['cfg']['RecodingEngine'] == 'auto') {
+    /*
+     * We also need to verify iconv works, see
+     * https://github.com/phpmyadmin/phpmyadmin/issues/11787/
+     * and
+     * https://bugs.php.net/bug.php?id=44096
+     */
+    if (@function_exists('iconv') && @iconv_strlen('', 'cp1250') !== false) {
+        $PMA_recoding_engine = PMA_getIconvRecodingEngine();
     } elseif (@function_exists('recode_string')) {
         $PMA_recoding_engine = PMA_CHARSET_RECODE;
+    } elseif (@function_exists('mb_convert_encoding')) {
+        $PMA_recoding_engine = PMA_CHARSET_MB;
     } else {
         $PMA_recoding_engine = PMA_CHARSET_NONE;
     }
@@ -58,6 +63,26 @@ if ($cfg['RecodingEngine'] == 'iconv') {
 /* Load AIX iconv wrapper if needed */
 if ($PMA_recoding_engine == PMA_CHARSET_ICONV_AIX) {
     include_once './libraries/iconv_wrapper.lib.php';
+}
+
+/**
+ * Determines the correct recoding engine to use
+ *
+ * @return int $PMA_recoding_engine
+ *
+ * @access  public
+ *
+ */
+function PMA_getIconvRecodingEngine()
+{
+    if ((@stristr(PHP_OS, 'AIX'))
+        && (@strcasecmp(ICONV_IMPL, 'unknown') == 0)
+        && (@strcasecmp(ICONV_VERSION, 'unknown') == 0)
+    ) {
+        return PMA_CHARSET_ICONV_AIX;
+    } else {
+        return PMA_CHARSET_ICONV;
+    }
 }
 
 /**
@@ -73,7 +98,7 @@ if ($PMA_recoding_engine == PMA_CHARSET_ICONV_AIX) {
  * @access  public
  *
  */
-function PMA_convert_string($src_charset, $dest_charset, $what)
+function PMA_convertString($src_charset, $dest_charset, $what)
 {
     if ($src_charset == $dest_charset) {
         return $what;
@@ -86,12 +111,15 @@ function PMA_convert_string($src_charset, $dest_charset, $what)
             $src_charset, $dest_charset . $GLOBALS['cfg']['IconvExtraParams'], $what
         );
     case PMA_CHARSET_ICONV_AIX:
-        return PMA_aix_iconv_wrapper(
+        return PMA_convertAIXIconv(
             $src_charset, $dest_charset . $GLOBALS['cfg']['IconvExtraParams'], $what
+        );
+    case PMA_CHARSET_MB:
+        return mb_convert_encoding(
+            $what, $dest_charset, $src_charset
         );
     default:
         return $what;
     }
-} //  end of the "PMA_convert_string()" function
+} //  end of the "PMA_convertString()" function
 
-?>

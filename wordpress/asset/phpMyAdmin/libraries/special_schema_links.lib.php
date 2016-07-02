@@ -1,6 +1,7 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
+ * Links configuration for MySQL system tables
  *
  * @package PhpMyAdmin
  */
@@ -14,7 +15,7 @@ if (! defined('PHPMYADMIN')) {
  * Major element represent a schema.
  * All the strings in this array represented in lower case
  * This global variable has not modified anywhere
- * 
+ *
  * Variable structure ex:
  * $GLOBALS['special_schema_links'] = array(
  *     // Database name is the major element
@@ -32,7 +33,7 @@ if (! defined('PHPMYADMIN')) {
  *                         // (can be array where url param has static value)
  *                         'param_info' => 'hostname',
  *                         // Column name related to url param
- *                         'column_name' => 'host'                        
+ *                         'column_name' => 'host'
  *                     )
  *                 ),
  *                 // Page to link
@@ -41,32 +42,206 @@ if (! defined('PHPMYADMIN')) {
  *         )
  *     )
  * );
- * 
+ *
  */
 $GLOBALS['special_schema_links'] = array(
     'mysql' => array(
-        'db' => array(
-            'db' => array(
-                'link_param' => 'db',
-                'default_page' => 'index.php'
-            ),
+        'columns_priv' => array(
             'user' => array(
                 'link_param' => 'username',
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'hostname',
-                        'column_name' => 'host'                        
+                        'column_name' => 'host'
+                    )
+                ),
+                'default_page' => 'server_privileges.php'
+            ),
+            'table_name' => array(
+                'link_param' => 'table',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'db',
+                        'column_name' => 'Db'
+                    ),
+                ),
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
+            ),
+            'column_name' => array(
+                'link_param' => 'field',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'db',
+                        'column_name' => 'Db'
+                    ),
+                    1 => array(
+                        'param_info' => 'table',
+                        'column_name' => 'Table_name'
+                    )
+                ),
+                'default_page' => 'tbl_structure.php?change_column=1'
+            ),
+        ),
+        'db' => array(
+            'user' => array(
+                'link_param' => 'username',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'hostname',
+                        'column_name' => 'host'
                     )
                 ),
                 'default_page' => 'server_privileges.php'
             )
         ),
-        'proc' => array(
-            'db' => array(
-                'link_param' => 'db',
-                'default_page' => 'index.php'
-            )
+        'event' => array(
+            'name' => array(
+                'link_param' => 'item_name',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'db',
+                        'column_name' => 'db'
+                    )
+                ),
+                'default_page' => 'db_events.php?edit_item=1'
+            ),
 
+        ),
+        'innodb_index_stats' => array(
+            'table_name' => array(
+                'link_param' => 'table',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'db',
+                        'column_name' => 'database_name'
+                    ),
+                ),
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
+            ),
+            'index_name' => array(
+                'link_param' => 'index',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'db',
+                        'column_name' => 'database_name'
+                    ),
+                    1 => array(
+                        'param_info' => 'table',
+                        'column_name' => 'table_name'
+                    )
+                ),
+                'default_page' => 'tbl_structure.php'
+            ),
+        ),
+        'innodb_table_stats' => array(
+            'table_name' => array(
+                'link_param' => 'table',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'db',
+                        'column_name' => 'database_name'
+                    ),
+                ),
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
+            ),
+        ),
+        'proc' => array(
+            'name' => array(
+                'link_param' => 'item_name',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'db',
+                        'column_name' => 'db'
+                    ),
+                    1 => array(
+                        'param_info' => 'item_type',
+                        'column_name' => 'type'
+                    )
+                ),
+                'default_page' => 'db_routines.php?edit_item=1'
+            ),
+            'specific_name' => array(
+                'link_param' => 'item_name',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'db',
+                        'column_name' => 'db'
+                    ),
+                    1 => array(
+                        'param_info' => 'item_type',
+                        'column_name' => 'type'
+                    )
+                ),
+                'default_page' => 'db_routines.php?edit_item=1'
+            ),
+        ),
+        'proc_priv' => array(
+            'user' => array(
+                'link_param' => 'username',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'hostname',
+                        'column_name' => 'Host'
+                    )
+                ),
+                'default_page' => 'server_privileges.php'
+            ),
+            'routine_name' => array(
+                'link_param' => 'item_name',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'db',
+                        'column_name' => 'Db'
+                    ),
+                    1 => array(
+                        'param_info' => 'item_type',
+                        'column_name' => 'Routine_type'
+                    )
+                ),
+                'default_page' => 'db_routines.php?edit_item=1'
+            ),
+        ),
+        'proxies_priv' => array(
+            'user' => array(
+                'link_param' => 'username',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'hostname',
+                        'column_name' => 'Host'
+                    )
+                ),
+                'default_page' => 'server_privileges.php'
+            ),
+        ),
+        'tables_priv' => array(
+            'user' => array(
+                'link_param' => 'username',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'hostname',
+                        'column_name' => 'Host'
+                    )
+                ),
+                'default_page' => 'server_privileges.php'
+            ),
+            'table_name' => array(
+                'link_param' => 'table',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'db',
+                        'column_name' => 'Db'
+                    ),
+                ),
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
+            ),
         ),
         'user' => array(
             'user' => array(
@@ -74,12 +249,11 @@ $GLOBALS['special_schema_links'] = array(
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'hostname',
-                        'column_name' => 'host'                        
+                        'column_name' => 'host'
                     )
                 ),
                 'default_page' => 'server_privileges.php'
             )
-
         )
     ),
     'information_schema' => array(
@@ -92,25 +266,23 @@ $GLOBALS['special_schema_links'] = array(
                         'column_name' => 'table_schema'
                     )
                 ),
-                'default_page' => 'index.php'
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
             ),
             'column_name' => array(
-                'link_param' => array(
-                    'sql_query',
-                    'table_schema',
-                    'table_name'
-                ),
+                'link_param' => 'field',
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'db',
-                        'column_name' => 'table_schema'     
+                        'column_name' => 'table_schema'
                     ),
                     1 => array(
                         'param_info' => 'table',
-                        'column_name' => 'table_name' 
+                        'column_name' => 'table_name'
                     )
                 ),
-                'default_page' => 'index.php'
+                'default_page' => 'tbl_structure.php?change_column=1'
             )
         ),
         'key_column_usage' => array(
@@ -119,123 +291,105 @@ $GLOBALS['special_schema_links'] = array(
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'db',
-                        'column_name' => 'constraint_schema'                        
+                        'column_name' => 'constraint_schema'
                     )
                 ),
-                'default_page' => 'index.php'
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
             ),
             'column_name' => array(
-                'link_param' => array(
-                    'sql_query',
-                    'table_schema',
-                    'table_name'
-                ),
+                'link_param' => 'field',
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'db',
-                        'column_name' => 'table_schema'     
+                        'column_name' => 'table_schema'
                     ),
                     1 => array(
                         'param_info' => 'table',
-                        'column_name' => 'table_name' 
+                        'column_name' => 'table_name'
                     )
                 ),
-                'default_page' => 'index.php'
-            ),
-            'referenced_table_schema' => array(
-                'link_param' => 'db',
-                'default_page' => 'index.php'
+                'default_page' => 'tbl_structure.php?change_column=1'
             ),
             'referenced_table_name' => array(
                 'link_param' => 'table',
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'db',
-                        'column_name' => 'referenced_table_schema'                        
+                        'column_name' => 'referenced_table_schema'
                     )
                 ),
-                'default_page' => 'index.php'
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
             ),
             'referenced_column_name' => array(
-                'link_param' => array(
-                    'sql_query',
-                    'referenced_table_schema',
-                    'referenced_table_name'
-                ),
+                'link_param' => 'field',
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'db',
-                        'column_name' => 'referenced_table_schema'     
+                        'column_name' => 'referenced_table_schema'
                     ),
                     1 => array(
                         'param_info' => 'table',
-                        'column_name' => 'referenced_table_name' 
+                        'column_name' => 'referenced_table_name'
                     )
                 ),
-                'default_page' => 'index.php'
+                'default_page' => 'tbl_structure.php?change_column=1'
             )
         ),
         'partitions' => array(
-            'table_schema' => array(
-                'link_param' => 'db',
-                'default_page' => 'index.php'
-            ),
             'table_name' => array(
                 'link_param' => 'table',
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'db',
-                        'column_name' => 'table_schema'                        
+                        'column_name' => 'table_schema'
                     )
                 ),
-                'default_page' => 'index.php'
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
             )
         ),
         'processlist' => array(
-            'db' => array(
-                'link_param' => 'db',
-                'default_page' => 'index.php'
-            ),
             'user' => array(
                 'link_param' => 'username',
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'hostname',
-                        'column_name' => 'host'                        
+                        'column_name' => 'host'
                     )
                 ),
                 'default_page' => 'server_privileges.php'
             )
         ),
         'referential_constraints' => array(
-            'constraint_schema' => array(
-                'link_param' => 'db',
-                'default_page' => 'index.php'
-            ),
-            'unique_constraint_schema' => array(
-                'link_param' => 'db',
-                'default_page' => 'index.php'
-            ),
             'table_name' => array(
                 'link_param' => 'table',
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'db',
-                        'column_name' => 'constraint_schema'                        
+                        'column_name' => 'constraint_schema'
                     )
                 ),
-                'default_page' => 'index.php'
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
             ),
             'referenced_table_name' => array(
                 'link_param' => 'table',
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'db',
-                        'column_name' => 'constraint_schema'                        
+                        'column_name' => 'constraint_schema'
                     )
                 ),
-                'default_page' => 'index.php'
-            )            
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
+            )
         ),
         'routines' => array(
             'routine_name' => array(
@@ -243,7 +397,7 @@ $GLOBALS['special_schema_links'] = array(
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'db',
-                        'column_name' => 'routine_schema'                        
+                        'column_name' => 'routine_schema'
                     ),
                     1 => array(
                         'param_info' => 'item_type',
@@ -251,46 +405,42 @@ $GLOBALS['special_schema_links'] = array(
                     )
                 ),
                 'default_page' => 'db_routines.php'
-            )
+            ),
         ),
         'schemata' => array(
             'schema_name' => array(
                 'link_param' => 'db',
-                'default_page' => 'index.php'
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
             )
         ),
         'statistics' => array(
-            'table_schema' => array(
-                'link_param' => 'db',
-                'default_page' => 'index.php'
-            ),
             'table_name' => array(
                 'link_param' => 'table',
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'db',
-                        'column_name' => 'table_schema'                        
+                        'column_name' => 'table_schema'
                     )
                 ),
-                'default_page' => 'index.php'
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
             ),
             'column_name' => array(
-                'link_param' => array(
-                    'sql_query',
-                    'table_schema',
-                    'table_name'
-                ),
+                'link_param' => 'field',
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'db',
-                        'column_name' => 'table_schema'     
+                        'column_name' => 'table_schema'
                     ),
                     1 => array(
                         'param_info' => 'table',
-                        'column_name' => 'table_name' 
+                        'column_name' => 'table_name'
                     )
                 ),
-                'default_page' => 'index.php'
+                'default_page' => 'tbl_structure.php?change_column=1'
             )
         ),
         'tables' => array(
@@ -299,11 +449,13 @@ $GLOBALS['special_schema_links'] = array(
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'db',
-                        'column_name' => 'table_schema'                        
+                        'column_name' => 'table_schema'
                     )
                 ),
-                'default_page' => 'index.php'
-            )
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
+            ),
         ),
         'table_constraints' => array(
             'table_name' => array(
@@ -311,13 +463,28 @@ $GLOBALS['special_schema_links'] = array(
                 'link_dependancy_params' => array(
                     0 => array(
                         'param_info' => 'db',
-                        'column_name' => 'table_schema'                        
+                        'column_name' => 'table_schema'
                     )
                 ),
-                'default_page' => 'index.php'
-            )
-        )
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
+            ),
+        ),
+        'views' => array(
+            'table_name' => array(
+                'link_param' => 'table',
+                'link_dependancy_params' => array(
+                    0 => array(
+                        'param_info' => 'db',
+                        'column_name' => 'table_schema'
+                    )
+                ),
+                'default_page' => PMA\libraries\Util::getScriptNameForOption(
+                    $GLOBALS['cfg']['DefaultTabTable'], 'table'
+                )
+            ),
+        ),
     )
 );
 
-?>

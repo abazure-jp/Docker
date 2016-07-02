@@ -9,45 +9,49 @@
 /**
  * Common functions.
  */
+// we don't want the usual PMA\libraries\Response-generated HTML above the column's
+// data
+define('PMA_BYPASS_GET_INSTANCE', 1);
 require_once 'libraries/common.inc.php';
 require_once 'libraries/mime.lib.php';
 
 /* Check parameters */
-PMA_Util::checkParameters(
-    array('db', 'table', 'where_clause', 'transform_key')
+PMA\libraries\Util::checkParameters(
+    array('db', 'table')
 );
 
 /* Select database */
-if (!PMA_DBI_select_db($db)) {
-    PMA_Util::mysqlDie(
+if (!$GLOBALS['dbi']->selectDb($db)) {
+    PMA\libraries\Util::mysqlDie(
         sprintf(__('\'%s\' database does not exist.'), htmlspecialchars($db)),
-        '', ''
+        '', false
     );
 }
 
 /* Check if table exists */
-if (!PMA_DBI_get_columns($db, $table)) {
-    PMA_Util::mysqlDie(__('Invalid table name'));
+if (!$GLOBALS['dbi']->getColumns($db, $table)) {
+    PMA\libraries\Util::mysqlDie(__('Invalid table name'));
 }
 
 /* Grab data */
-$sql = 'SELECT ' . PMA_Util::backquote($transform_key)
-    . ' FROM ' . PMA_Util::backquote($table)
-    . ' WHERE ' . $where_clause . ';';
-$result = PMA_DBI_fetch_value($sql);
+$sql = 'SELECT ' . PMA\libraries\Util::backquote($_GET['transform_key'])
+    . ' FROM ' . PMA\libraries\Util::backquote($table)
+    . ' WHERE ' . $_GET['where_clause'] . ';';
+$result = $GLOBALS['dbi']->fetchValue($sql);
 
 /* Check return code */
 if ($result === false) {
-    PMA_Util::mysqlDie(__('MySQL returned an empty result set (i.e. zero rows).'), $sql);
+    PMA\libraries\Util::mysqlDie(
+        __('MySQL returned an empty result set (i.e. zero rows).'), $sql
+    );
 }
 
 /* Avoid corrupting data */
 @ini_set('url_rewriter.tags', '');
 
 PMA_downloadHeader(
-    $table . '-' .  $transform_key . '.bin',
+    $table . '-' .  $_GET['transform_key'] . '.bin',
     PMA_detectMIME($result),
-    strlen($result)
+    mb_strlen($result, '8bit')
 );
 echo $result;
-?>

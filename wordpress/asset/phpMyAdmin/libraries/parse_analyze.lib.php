@@ -10,52 +10,59 @@ if (! defined('PHPMYADMIN')) {
 }
 
 /**
+ * Calls the parser on a query
  *
+ * @param string $sql_query the query to parse
+ * @param string $db        the current database
+ *
+ * @return array
+ *
+ * @access  public
  */
-$GLOBALS['unparsed_sql'] = $sql_query;
-$parsed_sql = PMA_SQP_parse($sql_query);
-$analyzed_sql = PMA_SQP_analyze($parsed_sql);
+function PMA_parseAnalyze($sql_query, $db)
+{
+    // @todo: move to returned results (also in all the calling chain)
+    $GLOBALS['unparsed_sql'] = $sql_query;
 
-// for bug 780516: now that we use case insensitive preg_match
-// or flags from the analyser, do not put back the reformatted query
-// into $sql_query, to make this kind of query work without
-// capitalizing keywords:
-//
-// CREATE TABLE SG_Persons (
-//  id int(10) unsigned NOT NULL auto_increment,
-//  first varchar(64) NOT NULL default '',
-//  PRIMARY KEY  (`id`)
-// )
+    // Get details about the SQL query.
+    $analyzed_sql_results = SqlParser\Utils\Query::getAll($sql_query);
 
-// check for a real SELECT ... FROM
-$is_select = isset($analyzed_sql[0]['queryflags']['select_from']);
+    extract($analyzed_sql_results);
+    $table = '';
 
-// If the query is a Select, extract the db and table names and modify
-// $db and $table, to have correct page headers, links and left frame.
-// db and table name may be enclosed with backquotes, db is optionnal,
-// query may contain aliases.
+    // If the targeted table (and database) are different than the ones that is
+    // currently browsed, edit `$db` and `$table` to match them so other elements
+    // (page headers, links, navigation panel) can be updated properly.
+    if (!empty($analyzed_sql_results['select_tables'])) {
 
-/**
- * @todo if there are more than one table name in the Select:
- * - do not extract the first table name
- * - do not show a table name in the page header
- * - do not display the sub-pages links)
- */
-if ($is_select) {
-    $prev_db = $db;
-    if (isset($analyzed_sql[0]['table_ref'][0]['table_true_name'])) {
-        $table = $analyzed_sql[0]['table_ref'][0]['table_true_name'];
+        // Previous table and database name is stored to check if it changed.
+        $prev_db = $db;
+
+        if (count($analyzed_sql_results['select_tables']) > 1) {
+
+            /**
+             * @todo if there are more than one table name in the Select:
+             * - do not extract the first table name
+             * - do not show a table name in the page header
+             * - do not display the sub-pages links)
+             */
+            $table = '';
+        } else {
+            $table = $analyzed_sql_results['select_tables'][0][0];
+            if (!empty($analyzed_sql_results['select_tables'][0][1])) {
+                $db = $analyzed_sql_results['select_tables'][0][1];
+            }
+        }
+        // There is no point checking if a reload is required if we already decided
+        // to reload. Also, no reload is required for AJAX requests.
+        if ((empty($reload)) && (empty($GLOBALS['is_ajax_request']))) {
+            // NOTE: Database names are case-insensitive.
+            $reload  = strcasecmp($db, $prev_db) != 0;
+        }
+
+        // Updating the array.
+        $analyzed_sql_results['reload'] = $reload;
     }
-    if (isset($analyzed_sql[0]['table_ref'][0]['db'])
-        && strlen($analyzed_sql[0]['table_ref'][0]['db'])
-    ) {
-        $db    = $analyzed_sql[0]['table_ref'][0]['db'];
-    } else {
-        $db = $prev_db;
-    }
-    // Nijel: don't change reload, if we already decided to reload in import
-    if (empty($reload) && empty($GLOBALS['is_ajax_request'])) {
-        $reload  = ($db == $prev_db) ? 0 : 1;
-    }
+
+    return array($analyzed_sql_results, $db, $table);
 }
-?>

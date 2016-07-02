@@ -12,11 +12,10 @@
  * Based on PMA_sanitize from sanitize.lib.php.
  *
  * @param string $lang_key key in $GLOBALS WITHOUT 'strSetup' prefix
- * @param mixed  $args,... arguments for sprintf
  *
  * @return string
  */
-function PMA_lang($lang_key, $args = null)
+function PMA_lang($lang_key)
 {
     $message = isset($GLOBALS["strConfig$lang_key"])
         ? $GLOBALS["strConfig$lang_key"] : $lang_key;
@@ -35,13 +34,13 @@ function PMA_lang($lang_key, $args = null)
 /**
  * Returns translated field name/description or comment
  *
- * @param string $canonical_path
- * @param string $type  'name', 'desc' or 'cmt'
- * @param mixed  $default
+ * @param string $canonical_path path to handle
+ * @param string $type           'name', 'desc' or 'cmt'
+ * @param mixed  $default        default value
  *
  * @return string
  */
-function PMA_lang_name($canonical_path, $type = 'name', $default = 'key')
+function PMA_langName($canonical_path, $type = 'name', $default = 'key')
 {
     $lang_key = str_replace(
         array('Servers/1/', '/'),
@@ -52,4 +51,3 @@ function PMA_lang_name($canonical_path, $type = 'name', $default = 'key')
         ? ($type == 'desc' ? PMA_lang($lang_key) : $GLOBALS["strConfig$lang_key"])
         : ($default == 'key' ? $lang_key : $default);
 }
-?>

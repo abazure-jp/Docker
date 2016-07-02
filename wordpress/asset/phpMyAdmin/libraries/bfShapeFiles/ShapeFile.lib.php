@@ -10,7 +10,23 @@
  * @package bfShapeFiles
  * @version 0.0.2
  * @link http://bfshapefiles.sourceforge.net/
- * @license http://www.gnu.org/copyleft/gpl.html GPLv2
+ * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2-or-later
+ *
+ * Copyright 2006-2007 Ovidio <ovidio AT users.sourceforge.net>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, you can download one from
+ * http://www.gnu.org/copyleft/gpl.html.
+ *
  */
   function loadData($type, $data) {
     if (!$data) return $data;
@@ -67,7 +83,7 @@
 
     var $records;
 
-    function ShapeFile($shapeType, $boundingBox = array("xmin" => 0.0, "ymin" => 0.0, "xmax" => 0.0, "ymax" => 0.0), $FileName = NULL) {
+    public function __construct($shapeType, $boundingBox = array("xmin" => 0.0, "ymin" => 0.0, "xmax" => 0.0, "ymax" => 0.0), $FileName = NULL) {
       $this->shapeType = $shapeType;
       $this->boundingBox = $boundingBox;
       $this->FileName = $FileName;
@@ -341,7 +357,7 @@
     var $SHPData = array();
     var $DBFData = array();
 
-    function ShapeRecord($shapeType) {
+    public function __construct($shapeType) {
       $this->shapeType = $shapeType;
     }
 
@@ -518,7 +534,6 @@
         fwrite($this->SHPFile, pack("V", count($this->SHPData["parts"][$i])));
       }
 
-      reset($this->SHPData["parts"]);
       foreach ($this->SHPData["parts"] as $partData){
         reset($partData["points"]);
         while (list($pointIndex, $pointData) = each($partData["points"])) {
@@ -663,4 +678,3 @@
     }
   }
 
-?>

@@ -8,19 +8,20 @@
  * @package    PhpMyAdmin-Transformations
  * @subpackage [TransformationName]
  */
+namespace PMA\libraries\plugins\transformations;
+
+use PMA\libraries\plugins\transformations\abs\[TransformationName]TransformationsPlugin;
+
 if (! defined('PHPMYADMIN')) {
     exit;
 }
-
-/* Get the [TransformationName] transformations interface */
-require_once 'abstract/[TransformationName]TransformationsPlugin.class.php';
 
 /**
  * Handles the [TransformationName] transformation for [MIMEType] - [MIMESubtype]
  *
  * @package PhpMyAdmin
  */
-class [MIMEType]_[MIMESubtype]_[TransformationName]
+class [MIMEType][MIMESubtype][TransformationName]
     extends [TransformationName]TransformationsPlugin
 {
     /**
@@ -42,27 +43,5 @@ class [MIMEType]_[MIMESubtype]_[TransformationName]
     {
         return "[MIMESubtype]";
     }
-}
-
-/**
- * Function to call [MIMEType]_[MIMESubtype]_[TransformationName]::getInfo();
- *
- * Temporary workaround for bug #3783 :
- * Calling a method from a variable class is not possible before PHP 5.3.
- *
- * This function is called by PMA_getTransformationDescription()
- * in libraries/transformations.lib.php using a variable to construct it's name.
- * This function then calls the static method.
- *
- * Don't use this function unless you are affected by the same issue.
- * Call the static method directly instead.
- *
- * @deprecated
- * @return string Info about transformation class
- */
-
-function [MIMEType]_[MIMESubtype]_[TransformationName]_getInfo()
-{
-    return [MIMEType]_[MIMESubtype]_[TransformationName]::getInfo();
 }
 ?>

@@ -5,20 +5,18 @@
  *
  * @package PhpMyAdmin
  */
+use PMA\libraries\ZipFile;
+
 if (! defined('PHPMYADMIN')) {
     exit;
 }
-
-/**
- * Load ZIP handler.
- */
-require_once './libraries/zip.lib.php';
 
 $GLOBALS['OpenDocumentNS']
     = 'xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" '
     . 'xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" '
     . 'xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" '
     . 'xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" '
+    . 'xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" '
     . 'xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" ';
 
 /**
@@ -37,7 +35,7 @@ function PMA_createOpenDocument($mime, $data)
     $zipfile -> addFile($mime, 'mimetype');
     $zipfile -> addFile($data, 'content.xml');
     $zipfile -> addFile(
-        '<?xml version="1.0" encoding="UTF-8"?'. '>'
+        '<?xml version="1.0" encoding="UTF-8"?' . '>'
         . '<office:document-meta '
         . 'xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" '
         . 'xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" '
@@ -54,7 +52,7 @@ function PMA_createOpenDocument($mime, $data)
     );
     $zipfile -> addFile(
         '<?xml version="1.0" encoding="UTF-8"?' . '>'
-        . '<office:document-styles '. $GLOBALS['OpenDocumentNS']
+        . '<office:document-styles ' . $GLOBALS['OpenDocumentNS']
         . 'office:version="1.0">'
         . '<office:font-face-decls>'
         . '<style:font-face style:name="Arial Unicode MS"'
@@ -167,4 +165,3 @@ function PMA_createOpenDocument($mime, $data)
     );
     return $zipfile -> file();
 }
-?>

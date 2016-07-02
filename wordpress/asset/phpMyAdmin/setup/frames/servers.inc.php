@@ -6,6 +6,9 @@
  * @package PhpMyAdmin-Setup
  */
 
+use PMA\libraries\config\ConfigFile;
+use PMA\libraries\config\FormDisplay;
+
 if (!defined('PHPMYADMIN')) {
     exit;
 }
@@ -13,24 +16,24 @@ if (!defined('PHPMYADMIN')) {
 /**
  * Core libraries.
  */
-require_once './libraries/config/Form.class.php';
-require_once './libraries/config/FormDisplay.class.php';
 require_once './setup/lib/form_processing.lib.php';
 
 require './libraries/config/setup.forms.php';
 
-$mode = filter_input(INPUT_GET, 'mode');
-$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+$mode = isset($_GET['mode']) ? $_GET['mode'] : null;
+$id = PMA_isValid($_GET['id'], 'numeric') ? intval($_GET['id']) : null;
 
-$cf = ConfigFile::getInstance();
+/** @var ConfigFile $cf */
+$cf = $GLOBALS['ConfigFile'];
 $server_exists = !empty($id) && $cf->get("Servers/$id") !== null;
 
 if ($mode == 'edit' && $server_exists) {
     $page_title = __('Edit server')
-        . ' ' . $id . ' <small>(' . htmlspecialchars($cf->getServerDSN($id)) . ')</small>';
+        . ' ' . $id
+        . ' <small>(' . htmlspecialchars($cf->getServerDSN($id)) . ')</small>';
 } elseif ($mode == 'remove' && $server_exists) {
     $cf->removeServer($id);
-    header('Location: index.php');
+    header('Location: index.php' . PMA_URL_getCommon());
     exit;
 } elseif ($mode == 'revert' && $server_exists) {
     // handled by process_formset()
@@ -39,11 +42,10 @@ if ($mode == 'edit' && $server_exists) {
     $id = 0;
 }
 if (isset($page_title)) {
-    echo '<h2>' . $page_title . '</h2>';
+    echo '<h2>' , $page_title . '</h2>';
 }
-$form_display = new FormDisplay();
+$form_display = new FormDisplay($cf);
 foreach ($forms['Servers'] as $form_name => $form) {
     $form_display->registerForm($form_name, $form, $id);
 }
-process_formset($form_display);
-?>
+PMA_Process_formset($form_display);

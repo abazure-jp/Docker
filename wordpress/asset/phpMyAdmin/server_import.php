@@ -1,16 +1,23 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
+ * Server import page
  *
  * @package PhpMyAdmin
  */
+use PMA\libraries\config\PageSettings;
+use PMA\libraries\Response;
 
 /**
  *
  */
 require_once 'libraries/common.inc.php';
+require_once 'libraries/config/user_preferences.forms.php';
+require_once 'libraries/config/page_settings.forms.php';
 
-$response = PMA_Response::getInstance();
+PageSettings::showGroup('Import');
+
+$response = PMA\libraries\Response::getInstance();
 $header   = $response->getHeader();
 $scripts  = $header->getScripts();
 $scripts->addFile('import.js');
@@ -20,8 +27,10 @@ $scripts->addFile('import.js');
  */
 require 'libraries/server_common.inc.php';
 
-$import_type = 'server';
 require 'libraries/display_import.lib.php';
-
-?>
-
+$response = Response::getInstance();
+$response->addHTML(
+    PMA_getImportDisplay(
+        'server', $db, $table, $max_upload_size
+    )
+);
