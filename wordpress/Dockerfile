@@ -41,7 +41,6 @@ ADD asset/wp-config.php /var/www/html/wordpress/wp-config.php
 ADD asset/wordpress.sql /root/wordpress.sql
 RUN service mysqld start && mysql wordpress < /root/wordpress.sql
 
-
 #そのた
 ADD asset/phpMyAdmin /var/www/html/phpMyAdmin
 
@@ -53,4 +52,3 @@ RUN rm -rf /var/www/html/wordpress/wp-content/plugins/makeTestEnv
 
 ## clean up
 RUN yum clean all
-
