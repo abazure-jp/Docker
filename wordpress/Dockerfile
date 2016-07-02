@@ -26,7 +26,6 @@ RUN chkconfig httpd on
 ADD asset/httpd.conf /etc/httpd/conf/httpd.conf
 ADD asset/php.ini /etc/php.ini
 
-
 #wordpress
 ##install wp_cli
 RUN curl -L https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar > /usr/local/bin/wp
@@ -56,8 +55,6 @@ RUN rm -rf /var/www/html/wordpress/wp-content/plugins/makeTestEnv
 RUN chmod -R 777 /var/www/html
 RUN chown -R apache:apache /var/www/html
 
-
-
-
-
+## clean up 
+RUN yum clean all
 
