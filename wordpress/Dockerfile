@@ -44,7 +44,7 @@ RUN service mysqld start && mysql wordpress < /root/wordpress.sql
 
 #そのた
 ADD asset/phpMyAdmin /var/www/html/phpMyAdmin
-RUN chmod -R 777 /var/www/html
+RUN chmod -R 770 /var/www/html/phpMyAdmin
 RUN chown -R apache:apache /var/www/html
 
 ## wordpress_test
@@ -52,9 +52,9 @@ RUN service mysqld start && cd /var/www/html/wordpress/wp-content/plugins && wp 
 RUN service mysqld start && /var/www/html/wordpress/wp-content/plugins/makeTestEnv/bin/install-wp-tests.sh wordpress_test wordpress_test wordpress_test@pass localhost
 RUN rm -rf /var/www/html/wordpress/wp-content/plugins/makeTestEnv
 
-RUN chmod -R 777 /var/www/html
+RUN chmod -R 777 /var/www/html/wordpress
 RUN chown -R apache:apache /var/www/html
 
-## clean up 
+## clean up
 RUN yum clean all
 
