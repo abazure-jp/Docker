@@ -1,7 +1,7 @@
 #This is say0213/wp
 FROM centos:6.7
 MAINTAINER Say Sano <say.0213@gmail.com>
-RUN yum install -y rpm
+RUN yum install -y rpm which tar svn
 RUN rpm -Uvh http://ftp.iij.ad.jp/pub/linux/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
 RUN rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
 RUN yum install -y --enablerepo=remi --enablerepo=remi-php56 php
@@ -18,21 +18,32 @@ RUN touch /var/lib/mysql/mysql.sock && chown -R mysql:mysql /var/lib/mysql
 RUN echo "NETWORKING=yes" >/etc/sysconfig/network
 ADD asset/init.sql /root/init.sql
 RUN service mysqld start && mysql < /root/init.sql
+RUN chmod -R 777 /var/lib/mysql/
 
 #apache
 RUN echo "/usr/sbin/httpd" >> ~/.bashrc
 RUN chkconfig httpd on
-
 ADD asset/httpd.conf /etc/httpd/conf/httpd.conf
 ADD asset/php.ini /etc/php.ini
-ADD asset/phpMyAdmin /var/www/html/phpMyAdmin
+
+
+#wordpress
+##install wp_cli
+RUN curl -L https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar > /usr/local/bin/wp
+RUN chmod +x /usr/local/bin/wp
+
+##install php_unit
+RUN curl -L https://phar.phpunit.de/phpunit-4.8.26.phar > /usr/local/bin/phpunit
+RUN chmod +x /usr/local/bin/phpunit
+
+## wordpress
 ADD asset/wordpress /var/www/html/wordpress
+ADD asset/wp-config.php /var/www/html/wordpress/wp-config.php
+ADD asset/wordpress.sql /root/wordpress.sql
+RUN service mysqld start && mysql wordpress < /root/wordpress.sql
 
-RUN chmod -R 777 /var/lib/mysql/
-
-RUN chmod -R 775 /var/www/html
+#そのた
+ADD asset/phpMyAdmin /var/www/html/phpMyAdmin
+RUN chmod -R 777 /var/www/html
 RUN chown -R apache:apache /var/www/html
-
-#Todo
-#nslookupの変更
 

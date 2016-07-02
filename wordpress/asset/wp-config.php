@@ -26,13 +26,13 @@
 
 // ** MySQL 設定 - この情報はホスティング先から入手してください。 ** //
 /** WordPress のためのデータベース名 */
-define('DB_NAME', 'docker');
+define('DB_NAME', 'wordpress');
 
 /** MySQL データベースのユーザー名 */
-define('DB_USER', 'docker');
+define('DB_USER', 'wordpress');
 
 /** MySQL データベースのパスワード */
-define('DB_PASSWORD', 'docker@pass');
+define('DB_PASSWORD', 'wordpress@pass');
 
 /** MySQL のホスト名 */
 define('DB_HOST', 'localhost');
