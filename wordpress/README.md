@@ -1,65 +1,76 @@
-# Docker
-Dockerfiles and the assets
+# What is this?
 
+This is material of Docker Image [say0213/wordpress](https://hub.docker.com/r/say0213/wordpress/) for wordpress developer.
+
+ - CentOS 6.7
+ - httpd 2.2
+ - PHP 5.6
+ - MySQL 5.6
+ - wp_cli
+ - phpunit
+ - wordpress
+ - wordpress_test
+ - phpMyAdmin
+
+# How to struct container
 ```
-docker build -t say0213/wordpress .
+dokcer run -d -ti -p 80:80 --name='wordpress' say0213/wordpress '/bin/bash'
 ```
-or
-```
-docker pull say0213/wordpress
-```
-After that,
-```
-dokcer run -ti -p 80:80 --name='my wordpress' -v [ My wp-content ]:/var/www/html/wordpress/wp-content  say0213/wordpress '/bin/bash'
-```
-Next, open 'dockerhost/phpMyAdmin/' in browsar, and login.
 
-> User: root
+# wordpress
 
-> PASS: (empty)
+> User: wordpress
 
-The name of database using wordpress is docker.
-import your wordpress .sqldump in docker.
+> PASS: wordpress@pass
 
+This docker images contain `wp-cli`. when use it type `wp`.
 
-This docker images contain wp-cli. when use it type `wp`.
-
-# memo
+## Eigo muzukasii desu
 
 unzipしたばかりのwordpressとその後インストールしたwordpressのdiffみたらwp-config.phpと.htaccessにだけ反応した。
 
 インストールってのはDBへのinitデータぶっこみとコンフィグファイルの作成だけってことなのかな？
 
-つーことは基本的にwordpressの動はwp-config.phpとwp-content/とDBと.htaccessだけってことになる。なるよね？
+つーことは基本的にwordpressの動的な部分って*wp-config.php*と*wp-content/*と*DB*と*.htaccess*だけってことになる。なるよね？
 
-使い方はこう。
+なのでwp-config.phpとwp-contentとDBと.htaccessだけ-vでバインドすることでよりスマートに扱えるんじゃないでしょうか。
 
-ローカルホスト上ではwp-contentとwp-config.phpと.sqldumpを用意しておく。
+### 本番環境のwordpressをローカルのdocker内で再現したい
+-vで上記の動的な部分だけバインドしよう。
+たとえば、本番環境のwordpressから
+*wp-config.php*と*wp-content/*と*sqldump*と*.htaccess*を手元に持ってくる。これらをhoge/に配置するとする。
+その後次のコマンド。
+なおコマンドでは-v以降のローカルディレクトリがhoge/wp-contentとなっているが、実際はフルパスじゃないと動こかないので気をつけて。
+```
+dokcer run -d -ti -p 80:80 --name='hoge' -v hoge/wp-content:/var/www/html/wordpress/wp-content -v  hoge/wp-config.php//var/www/html/wordpress/wp-config.php -v aiuoe/.htaccess:/var/www/html/wordpress/.htaccess say0213/wordpress '/bin/bash'
+```
 
-コンテナは-vでwp-contentとwp-config.phpだけ共有しておく。
+つぎに`dockerhost/phpMyAdmin`にアクセスして.sqldumpファイルをDB名:wordpressに突っ込む。
+あとはwp-config.phpを微妙に調整したりDB:wordpresのoptionsからsiteurlあたりをdocker-machine ipの値に書き換えましょう。
 
-その後コンテナ内にあるphpMyAdminから（直接mysqlやってもいいけど）で.sqldumpファイルを突っ込む。
 
-最後にブラウザからパーマリンク設定をdocker-machine ipの値に変更する。
+## ちなみに
+-vで動的な部分をバインドしない場合、つまり、
+```
+dokcer run -d -ti -p 80:80 --name='wordpress' say0213/wordpress '/bin/bash'
+```
+でコンテナを立てると、解答してインストールした直後の、初期設定wordpressにアクセス出来るようになってます。プラグイン開発したい時とかにいいかもしれない。
 
--vで動的な部分をバインドしない場合、初期設定のwordpressにアクセス出来るようになっている。プラグイン開発したい時とかにいいかもしれない。
 その場合、
 
->User: wordpress
+>WP User: wordpress
 
->Pass: wordpress@pass
+>WP Pass: wordpress@pass
 
-dbも同じだけどrootユーザーにパスワードを設定していないので、ユーザーが見る分にはrootでもおk
+dbも同じIDとPassだけどrootユーザーにパスワードを設定していないので、人間が見る分にはrootでもおk
 
 wp_cliに準拠したテスト環境もデフォで入っているので都度[plugin]/bin/test_install.shする必要はないです。該当プラグイン下でtestsがあればphpunitできます。
 
 なおphpunit用の環境情報は
 
 DB: wordpress_test
+
 USER: wordpress_test
+
 PASS: wordpress_test@pass
-
-
-
-
 
