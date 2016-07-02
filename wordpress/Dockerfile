@@ -1,4 +1,4 @@
-#This is say0213/wp
+#This is say0213/wordpress
 FROM centos:6.7
 MAINTAINER Say Sano <say.0213@gmail.com>
 RUN yum install -y rpm which tar svn
