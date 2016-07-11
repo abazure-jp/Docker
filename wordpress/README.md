@@ -9,7 +9,7 @@ TODO: どーにかしてsiteurl,hostをwp cliとかで済ますようにでき�
 
 こうなんというか手心というか…
 
-
+あとさあsqlから使用しているpluginを解析して`wp plugin install --active`とかやってくれへん？
 
 
 
