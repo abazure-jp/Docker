@@ -1,5 +1,18 @@
 # What is this?
 
+
+TODO: どーにかしてsiteurl,hostをwp cliとかで済ますようにできん？
+
+-> sqlでテーブルのprefixを`wp_`に書き換える
+
+つーか前提がsqlとwp-content有りきら長ったらしいバインドフルパスじゃなくて
+
+こうなんというか手心というか…
+
+
+
+
+
 This is material of Docker Image [say0213/wordpress](https://hub.docker.com/r/say0213/wordpress/) for wordpress developer.
 
  - CentOS 6.7
