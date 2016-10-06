@@ -1,23 +1,23 @@
 # Mysql on Docker
 ※自分用覚書です
-dockerが便利なのでかなりお世話になっている。けれどデータだけが違う同一のウェブサービスがある時に、同一のウェブサービスコンテナに別の名前を付けて運用するのが計算機にコストかかるし都度面倒な-vとか書いたり覚えたりすんのだるい。あとmysqlのバージョンかえます〜〜〜ってなったときもっと手軽にマイグレーションしたい。
 
-こういった問題をdocker上のコンテナだけで解決してくれる機能があるらしい。
+データとソースを極力分離して扱いたい。
+そこでデータボリュームコンテナを作成して諸々のサービスのうちデータだけをAWS S3にrsyncしたい。
 
 ## data
-mysqlのデータを保存する為のコンテナを作る。
-どうやらmysqlのデータは`/var/lib/mysql/`に保存されるらしいので、同じパスのボリュームを作成した`busybox`を建てる。
 ```
-docker create -v /var/lib/mysql --name=mysql-data busybox /bin/true
+docker create -v /var/lib/mysql --name=data busybox /bin/true
 ```
 `docker ps -a`しないとでないけどそれで良いらしい。
+たねだねのサービスがそれぞれ個別にコンテナを建てるのに対して、データ用のコンテナはどでんと一つあれば事足りるのだが、
+あとから`-v /hogehoge`することが出来るのだろうか？
+出来なさそう。
+なので、データコンテナの共有ボリュームは`data`のみとして、その中にたとえば`mysql`,`psql`みたいなディレクトリを作成することで、あとからたねだねのデータコンテナを乱立させないようにしようと思う。
 
-ここでいうボリュームのみが`--volumes-from`で利用可能になるらしい。
-あと`docker commit`とかすると消えるらしい。ではどうやって永続性を得るというのか。
+と思ったけどそれだとサービス側のデータパスを変えなきゃいけなくて面倒？
+それともlinkコマンドうてばよい？
 
-
-
-
+-> 大人しくサービスごとにデータコンテナを建てよう
 
 ## Mysql
 
@@ -27,9 +27,11 @@ docker create -v /var/lib/mysql --name=mysql-data busybox /bin/true
 ```
 docker run --volumes-from mysql-data --name mysql -p 13306:3306 -e MYSQL_ROOT_PASSWORD=mysql@pass -d mysql
 ```
+上のコマンドには記されていないが、デフォの`my.cnf`は文字コードがlatin1になっていて困るので`-v hogehoge.cnf:/etc/mysql/conf.d`で設定を変えよう。
+MySQL5.5.3以降であれば`utf8mb4`が安牌のようだがそれ未満では対応していない。
+２次ソースだが(ここ)[http://pc.thejuraku.com/wordpress-4-2、mysql-5-5-3及びutf8mb4について/2178/]の説明が分かりやすかった。
+
+
 `-p 13306:3306`でポートマッピングしたのはsequalとかlocalから見ることもあるよね？？という希望で。あとintelliJのdockerプラグインでも使う予感したので。
-
-
-
 
 
