@@ -6,6 +6,7 @@
 そこでデータボリュームコンテナを作成して諸々のサービスのうちデータだけをAWS S3にrsyncしたい。
 
 ---
+## ( ఠൠఠ )
 docker-machineをVirtualBoxからOSXに変えた際痛い目をみた
 
 1. 80:80でバインドしたらMacのhttpdにアクセス
@@ -17,7 +18,14 @@ docker-machineをVirtualBoxからOSXに変えた際痛い目をみた
   - 立て直すか―と思ったらr_proxy関係のやつ文書化して無くていやーくまったくまった
   - `docker-compose.yml`はよ
 
+ ---
 
+### jwilder/nginx-proxyの使い方
+1. `docker run -d -p 80:80 -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy`
+2. `docker run -e VIRTUAL_HOST my.app myapp`
+3. Add `127.0.0.0.1 localhost myapp` in `/etc/hots`
+
+ありがたや。
 
 ## (´⊙ω⊙\` ≡ ´⊙ω⊙\`)
 
