@@ -14,6 +14,8 @@ docker-machineをVirtualBoxからOSXに変えた際痛い目をみた
   - `127.0.0.0`だとコンテナにバインド
   - `127.0.0.1`だとMacにバインド
   - `sudo killall httpd`してもMac上のhttpdのドキュメントルートで**It Works!**してる謎
+    - `sudo apachectl stop && sudo killall httpd`のあとブラウザのキャッシュクリア
+    - つーか恒常的にプライベートウィンドウ使えよ開発のときは
 2. 旧環境のコンテナ起動できない
   - 立て直すか―と思ったらr_proxy関係のやつ文書化して無くていやーくまったくまった
   - `docker-compose.yml`はよ
@@ -26,6 +28,9 @@ docker-machineをVirtualBoxからOSXに変えた際痛い目をみた
 3. Add `127.0.0.0.1 localhost myapp` in `/etc/hots`
 
 ありがたや。
+
+
+### 
 
 ## (´⊙ω⊙\` ≡ ´⊙ω⊙\`)
 
