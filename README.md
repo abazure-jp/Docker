@@ -25,7 +25,7 @@ docker-machineをVirtualBoxからOSXに変えた際痛い目をみた
 ### jwilder/nginx-proxyの使い方
 1. `docker run -d -p 80:80 -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy`
 2. `docker run -e VIRTUAL_HOST my.app myapp`
-3. Add `127.0.0.0.1 localhost myapp` in `/etc/hots`
+3. Add `127.0.0.0.1 localhost my.app` in `/etc/hots`
 
 ありがたや。
 
