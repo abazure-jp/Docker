@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  web:
+    image: redmine
+    volumes_from:
+      - data
+    environment:
+      VIRTUAL_HOST: my.redmine
+      REDMINE_DB_MYSQL: db
+      REDMINE_DB_PASSWORD: redmine@pass
+    depends_on:
+      - db
+      - data
+
+  db:
+    image: mariadb
+    volumes_from:
+      - data
+    environment:
+      MYSQL_ROOT_PASSWORD: redmine@pass
+      MYSQL_DATABASE: redmine
+    depends_on:
+      - data
+
+  data:
+    image: busybox
+    volumes:
+      - /var/lib/mysql/
+      - /usr/src/redmine/files/

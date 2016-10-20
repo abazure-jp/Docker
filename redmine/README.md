@@ -4,5 +4,4 @@ docker run --volumes-from redmine-data -v /..../redmine/mysql/my.cnf:/etc/my.cnf
 docker run -d --name redmine -e VIRTUAL_HOST=my.redmine --link redmine-mysql:mysql redmine
 ```
 
-あとでこれをdocker-composeにまとめてくれ
 
