@@ -1,28 +1,22 @@
-version: '2'
+data:
+  image: busybox
+  volumes:
+    - /var/lib/mysql/
+    - /usr/src/redmine/files/
 
-services:
-  data:
-      image: busybox
-      volumes:
-        - /var/lib/mysql/
-        - /usr/src/redmine/files/
+web:
+  image: redmine
+  volumes_from:
+    - data
+  environment:
+    VIRTUAL_HOST: my.redmine
+  links:
+    - db:mysql
 
-  web:
-      image: redmine
-      volumes_from:
-        - data
-      environment:
-        VIRTUAL_HOST: my.redmine
-      depends_on:
-        - data
-        - db
-
-  db:
-      image: mysql
-      volumes_from:
-        - data
-      environment:
-        MYSQL_ROOT_PASSWORD: redmine@pass
-        MYSQL_DATABASE: redmine
-
-
+db:
+  image: mysql:5.5
+  volumes_from:
+    - data
+  environment:
+    MYSQL_ROOT_PASSWORD: redmine@pass
+    MYSQL_DATABASE: redmine
