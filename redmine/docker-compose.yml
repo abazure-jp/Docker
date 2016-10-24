@@ -3,6 +3,7 @@ data:
   volumes:
     - ~/Docker/redmine/data/var/lib/mysql/:/var/lib/mysql/
     - ~/Docker/redmine/data/usr/src/redmine/files/:/usr/src/redmine/files/
+    - ~/Docker/redmine/data/usr/src/redmine/plugins/:/usr/src/redmine/plugins
 
 web:
   image: redmine
